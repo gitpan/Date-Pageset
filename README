@@ -1,0 +1,126 @@
+INSTALLATION
+
+To install this module type the following:
+
+   perl Makefile.PL
+   make
+   make test
+   make install
+
+NAME
+    Data::Pageset - Page numbering and page sets
+
+SYNOPSIS
+      use Data::Pageset;
+      my $page_info = Data::Pageset->new({
+        'total_entries'       => $total_entries, 
+        'entries_per_page'    => $entries_per_page, 
+        # Optional, will use defaults otherwise.
+        'current_page'        => $current_page,
+        'pages_per_set'       => $pages_per_set,
+      });
+
+      # General page information
+      print "         First page: ", $page_info->first_page, "\n";
+      print "          Last page: ", $page_info->last_page, "\n";
+      print "          Next page: ", $page_info->next_page, "\n";
+      print "      Previous page: ", $page_info->previous_page, "\n";
+
+      # Results on current page
+      print "First entry on page: ", $page_info->first, "\n";
+      print " Last entry on page: ", $page_info->last, "\n";
+
+      # Can add in the pages per set after the object is created
+      $page_info->pages_per_set($pages_per_set);
+  
+      # Page set information
+      print "First page of previous page set: ",  $page_info->previous_set, "\n";
+      print "    First page of next page set: ",  $page_info->next_set, "\n";
+  
+      # Print the page numbers of the current set
+      foreach my $page (@{$page_info->pages_in_set()}) {
+        if($page == $page_info->current_page()) {
+          print "<b>$page</b> ";
+        } else {
+          print "$page ";
+        }
+      }
+
+DESCRIPTION
+    The object produced by Data::Pageset can be used to create page
+    navigation, it inherits from Data::Page and has access to all methods
+    from this object.
+
+    In addition it also provides methods for dealing with set of pages, so
+    that if there are too many pages you can easily break them into chunks
+    for the user to browse through.
+
+    The object can easily be passed to a templating system such as Template
+    Toolkit or be used within a script.
+
+METHODS
+  new()
+      use Data::Pageset;
+      my $page_info = Data::Pageset->new({
+        'total_entries'       => $total_entries, 
+        'entries_per_page'    => $entries_per_page, 
+        # Optional, will use defaults otherwise.
+        'current_page'        => $current_page,
+        'pages_per_set'       => $pages_per_set,
+      });
+
+    This is the constructor of the object, it requires an anonymous hash
+    containing the 'total_entries', how many data units you have, and the
+    number of 'entries_per_page' to display. Optionally the 'current_page'
+    (defaults to page 1) and pages_per_set (how many pages to display) can
+    be added. If the pages_per_set are not passed in they can be added
+    later, though obviously if it is never added you will not be able to use
+    the page set specific functionality.
+
+  pages_per_set()
+      $page_info->pages_per_set($number_of_pages_per_set);
+
+    Calling this method initalises the calculations required to use the
+    paging methods below. The value can also be passed into the constructor
+    method new().
+
+    If called without any arguments it will return the current number of
+    pages per set.
+
+  previous_set()
+      print "Back to previous set which starts at ", $page_info->previous_set(), "\n";
+
+    This method returns the page number at the start of the previous page
+    set. undef is return if pages_per_set has not been set.
+
+  next_set()
+      print "Next set starts at ", $page_info->next_set(), "\n";
+
+    This method returns the page number at the start of the next page set.
+    undef is return if pages_per_set has not been set.
+
+  pages_in_set()
+      foreach my $page_num (@{$page_info->pages_in_set()}) {
+        print "Page: $page_num \n";
+      }
+
+    This method returns an array ref of the the page numbers within the
+    current set. undef is return if pages_per_set has not been set.
+
+EXPORT
+    None by default.
+
+AUTHOR
+    Leo Lapworth <lt>LLAP@cuckoo.org<gt>
+
+SEE ALSO
+    Data::Page.
+
+COPYRIGHT
+    Copyright (C) 2000-2, Leo Lapworth
+
+    This module is free software; you can redistribute it or modify it under
+    the same terms as Perl itself.
+
+    With thanks to Foxtons for letting me develop this in their time and
+    to Leon for being orange - or being helpful, I forget.
